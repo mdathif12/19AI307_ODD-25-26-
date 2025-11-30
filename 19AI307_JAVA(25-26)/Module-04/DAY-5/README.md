@@ -1,19 +1,23 @@
-# Ex.No:5(A) INPUTSTREAMREADER 
+# Ex.No:4(E) DESIGN PATTERN  ---- MEDIATOR PATTERN
 
 ## QUESTION:
-Write a Java program to create a new file and write user-provided content into it.
+Create a ChatRoom class (mediator) and two users (colleagues) who send and receive messages through it. No direct communication allowed.
 
 ## AIM:
-To create a new file and write user-provided content into it using Java I/O classes.
+Implement the Mediator pattern using a ChatRoom class to manage communication between User objects, preventing direct interaction.
 
 ## ALGORITHM :
-1.	Start the program and create a Scanner object to read input from the user.
-2. Read the file name and the content to be written.
-3. Create a File object with the given file name.
-4. Check if the file already exists; if not, create a new file.
-5. Use FileWriter to write the user-provided content into the file.
-6. Close the writer and display a success message or handle exceptions if any occur.
+1. Create a ChatRoom class that holds a collection of users, registers users using registerUser(), delivers messages using sendMessage(from, to, message).
 
+2. Create a User class containing a user name, a reference to the ChatRoom mediator, a send() method that passes messages to the chat room, a receive() method to display incoming messages.
+
+3. Read two user names and create User objects, automatically registering them with the chat room.
+
+4. Read the number of chat exchanges.
+
+5. For each exchange read sender, receiver, and message, call the corresponding user’s send() method.
+
+6. Ensure all communication happens only through the mediator (ChatRoom), not directly between users.
 
 
 
@@ -21,44 +25,77 @@ To create a new file and write user-provided content into it using Java I/O clas
 ## PROGRAM:
  ```
 /*
-Program to implement a InputStreamReader using Java
-Developed by:MOHAMED ATHIF RAHUMAN J
-RegisterNumber:  212223220058
+Program to implement a  Pattern using Java
+Developed by: MOHAMED ATHIF RAHUMAN J
+RegisterNumber: 212223220058
 */
 ```
 
 ## SOURCE CODE:
-```JAVA
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Scanner;
-import java.io.File;
+```
+import java.util.*;
 
-public class CreateAndWriteFile {
+class ChatRoom {
+    private Map<String, User> users = new HashMap<>();
+
+    public void registerUser(User user) {
+        users.put(user.getName(), user);
+    }
+
+    public void sendMessage(String from, String to, String message) {
+        User receiver = users.get(to);
+        if (receiver != null) {
+            receiver.receive(from, message);
+        } else {
+            System.out.println("User " + to + " not found");
+        }
+    }
+}
+
+class User {
+    private String name;
+    private ChatRoom chatRoom;
+
+    public User(String name, ChatRoom chatRoom) {
+        this.name = name;
+        this.chatRoom = chatRoom;
+        chatRoom.registerUser(this);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void send(String to, String message) {
+        chatRoom.sendMessage(name, to, message);
+    }
+
+    public void receive(String from, String message) {
+        System.out.println(from + " to " + name + ": " + message);
+    }
+}
+
+public class ChatApp {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
-        String fileName = sc.nextLine();
-        String content = sc.nextLine();
+        ChatRoom room = new ChatRoom();
+        User user1 = new User(sc.nextLine(), room); 
+        User user2 = new User(sc.nextLine(), room);
 
-        try {
-            File file = new File(fileName);
+        int n = Integer.parseInt(sc.nextLine());
+        for (int i = 0; i < n; i++) {
+            String sender = sc.nextLine();
+            String receiver = sc.nextLine();
+            String message = sc.nextLine();
 
-            if (file.createNewFile()) {
-                System.out.println("File created: " + file.getName());
+            if (sender.equals(user1.getName())) {
+                user1.send(receiver, message);
+            } else if (sender.equals(user2.getName())) {
+                user2.send(receiver, message);
             } else {
-                System.out.println("File already exists. Writing content...");
+                System.out.println("Unknown sender");
             }
-
-            FileWriter writer = new FileWriter(file);
-            writer.write(content);
-            writer.close();
-
-            System.out.println("Content written to the file successfully.");
-
-        } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
         }
 
         sc.close();
@@ -67,16 +104,17 @@ public class CreateAndWriteFile {
 ```
 
 
-
-
-
-
 ## OUTPUT:
-
-<img width="1214" height="440" alt="image" src="https://github.com/user-attachments/assets/5a82c95e-1053-4ce4-ab1e-fc0a000ef1ee" />
+<img width="1143" height="846" alt="image" src="https://github.com/user-attachments/assets/e6ccf91b-1c65-4d94-bfdc-ddf4f68b9ad1" />
 
 
 
 ## RESULT:
-The program executed successfully and created a new file (or used an existing one) and wrote the provided content into it.
+Therefore the program successfully demonstrates message exchange using the Mediator Pattern, with all user communication routed through the ChatRoom.
+
+
+
+
+
+
 
